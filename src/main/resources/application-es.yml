@@ -1,0 +1,6 @@
+spring:
+  elasticsearch:
+    rest:
+      uris: http://1.1.1.1:9200
+      username: elastic
+      password: elastic
