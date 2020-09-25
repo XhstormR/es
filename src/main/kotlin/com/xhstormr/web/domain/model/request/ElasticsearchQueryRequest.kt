@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty
 data class ElasticsearchQueryRequest(
     @field:ApiModelProperty(
         "检索字符串",
-        example = "task:1 AND type:log AND label:openvpn AND timestamp:[2020-01-01 TO 2020-12-31]"
+        example = "task:1 AND type:log AND label:openvpn AND timestamp:[2020-01-01T12:30:00 TO now]"
     )
     val query: String
 )
