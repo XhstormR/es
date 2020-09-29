@@ -36,6 +36,8 @@ dependencies {
     runtimeOnly(kotlin("reflect"))
     runtimeOnly("com.fasterxml.jackson.module:jackson-module-kotlin")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+
     /**/
 
     implementation("io.springfox:springfox-boot-starter:+")

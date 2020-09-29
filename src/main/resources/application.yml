@@ -13,6 +13,7 @@ spring:
   profiles:
     include:
       - es
+      - snapshot
   application:
     name: web
   main:
@@ -40,4 +41,5 @@ logging:
   level:
     root: warn
     com.xhstormr.web: info
-    tracer: trace
+    org.elasticsearch.client: trace
+#    tracer: trace

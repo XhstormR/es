@@ -1,0 +1,3 @@
+snapshot:
+  dir: ${dir:/app/data/snapshot/}
+  manifest: MANIFEST.properties
