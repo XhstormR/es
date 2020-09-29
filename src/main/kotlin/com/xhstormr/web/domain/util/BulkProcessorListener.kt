@@ -14,7 +14,7 @@ object BulkProcessorListener : BulkProcessor.Listener {
 
     override fun afterBulk(executionId: Long, request: BulkRequest, response: BulkResponse) {
         if (response.hasFailures()) {
-            LOGGER.error("Bulk [{}] executed with failures", executionId)
+            LOGGER.error("Bulk [{}] executed with failures: {}", executionId, response.buildFailureMessage())
         } else {
             LOGGER.debug("Bulk [{}] completed in {} milliseconds", executionId, response.took.millis)
         }

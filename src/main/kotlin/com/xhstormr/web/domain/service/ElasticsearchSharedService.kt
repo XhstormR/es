@@ -132,7 +132,7 @@ class ElasticsearchSharedService(
         BulkProcessor.builder(
             { request, bulkListener -> client.bulkAsync(request, RequestOptions.DEFAULT, bulkListener) },
             BulkProcessorListener
-        ).setConcurrentRequests(3)
+        ).setConcurrentRequests(8)
             .build().use { bulkProcessor ->
                 file.bufferedReader().useLines { lines ->
                     lines

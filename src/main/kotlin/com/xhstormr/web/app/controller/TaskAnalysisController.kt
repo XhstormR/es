@@ -1,5 +1,6 @@
 package com.xhstormr.web.app.controller
 
+import com.xhstormr.web.app.config.Const
 import com.xhstormr.web.domain.model.request.ElasticsearchQueryRequest
 import com.xhstormr.web.domain.model.request.PageRequest
 import com.xhstormr.web.domain.service.ElasticsearchSharedService
@@ -22,7 +23,7 @@ import javax.validation.Valid
  */
 @Api(tags = ["任务分析接口"])
 @RestController
-@RequestMapping("/task/{taskIndex:^topic-.+$}", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping("/task/{taskIndex:^${Const.INDICES}.+$}", produces = [MediaType.APPLICATION_JSON_VALUE])
 class TaskAnalysisController(
     private val taskService: TaskService,
     private val elasticsearchSharedService: ElasticsearchSharedService

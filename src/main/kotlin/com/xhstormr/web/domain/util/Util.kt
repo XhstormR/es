@@ -18,4 +18,4 @@ fun exec(command: String) =
     if (isWindows())
         Runtime.getRuntime().exec("""cmd /c %s""".format(command)).waitFor()
     else
-        Runtime.getRuntime().exec("""sh -c %s""".format(command)).waitFor()
+        Runtime.getRuntime().exec(arrayOf("sh", "-c", command)).waitFor()
