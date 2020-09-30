@@ -85,9 +85,9 @@ class ElasticsearchSharedService(
 
     fun dumpIndex(indices: String, file: File) {
         runBlocking {
-            val channel = produce(Dispatchers.IO, Channel.Factory.BUFFERED) {
+            val channel = produce(Dispatchers.IO, Channel.UNLIMITED) {
                 val searchSourceBuilder = SearchSourceBuilder.searchSource()
-                    .size(1000)
+                    .size(3000)
                 val searchRequest = SearchRequest(indices)
                     .source(searchSourceBuilder)
                     .scroll(TimeValue.timeValueMinutes(1L))
@@ -132,9 +132,11 @@ class ElasticsearchSharedService(
         BulkProcessor.builder(
             { request, bulkListener -> client.bulkAsync(request, RequestOptions.DEFAULT, bulkListener) },
             BulkProcessorListener
-        ).setConcurrentRequests(8)
+        )
+            .setBulkActions(3000)
+            .setConcurrentRequests(16)
             .build().use { bulkProcessor ->
-                file.bufferedReader().useLines { lines ->
+                Files.lines(file.toPath()).parallel().use { lines ->
                     lines
                         .map { IndexRequest(indices).source(it, XContentType.JSON) }
                         .forEach { bulkProcessor.add(it) }
