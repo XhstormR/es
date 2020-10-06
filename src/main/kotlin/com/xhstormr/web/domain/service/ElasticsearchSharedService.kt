@@ -126,8 +126,8 @@ class ElasticsearchSharedService(
         }
     }
 
-    fun importIndex(indices: String, file: File) {
-        if (existsIndex(indices)) deleteIndex(indices)
+    fun importIndex(indices: String, file: File, append: Boolean = false) {
+        if (!append && existsIndex(indices)) deleteIndex(indices)
 
         BulkProcessor.builder(
             { request, bulkListener -> client.bulkAsync(request, RequestOptions.DEFAULT, bulkListener) },

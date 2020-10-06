@@ -16,6 +16,6 @@ fun isWindows() = File.separatorChar == '\\'
 
 fun exec(command: String) =
     if (isWindows())
-        Runtime.getRuntime().exec("""cmd /c %s""".format(command)).waitFor()
+        Runtime.getRuntime().exec(arrayOf("cmd", "/c", command)).waitFor()
     else
         Runtime.getRuntime().exec(arrayOf("sh", "-c", command)).waitFor()

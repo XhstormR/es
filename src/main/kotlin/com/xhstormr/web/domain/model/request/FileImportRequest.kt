@@ -8,8 +8,8 @@ import java.io.File
  * @author zhangzf
  * @create 2018/8/1 9:45
  */
-@ApiModel("任务导入请求")
-data class TaskImportRequest(
+@ApiModel("文件导入请求")
+data class FileImportRequest(
     @field:ApiModelProperty("文件")
     val file: File
 )

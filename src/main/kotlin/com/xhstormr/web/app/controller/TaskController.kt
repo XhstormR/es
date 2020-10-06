@@ -2,8 +2,8 @@ package com.xhstormr.web.app.controller
 
 import com.xhstormr.web.app.config.Const
 import com.xhstormr.web.domain.model.request.ElasticsearchQueryRequest
+import com.xhstormr.web.domain.model.request.FileImportRequest
 import com.xhstormr.web.domain.model.request.PageRequest
-import com.xhstormr.web.domain.model.request.TaskImportRequest
 import com.xhstormr.web.domain.service.ElasticsearchSharedService
 import com.xhstormr.web.domain.service.TaskService
 import io.swagger.annotations.Api
@@ -49,6 +49,8 @@ class TaskController(
 
     @ApiOperation("任务导入")
     @PostMapping("/import")
-    fun importTask(@ApiParam("检索请求") @Valid @RequestBody request: TaskImportRequest) =
+    fun importTask(
+        @ApiParam("任务导入请求") @Valid @RequestBody request: FileImportRequest
+    ) =
         taskService.importTask(request.file)
 }

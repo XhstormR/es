@@ -40,11 +40,15 @@ class TaskAnalysisController(
 
     @ApiOperation("任务字段")
     @GetMapping("/field")
-    fun getTaskField(@ApiParam("任务索引") @PathVariable taskIndex: String) =
+    fun getTaskField(
+        @ApiParam("任务索引") @PathVariable taskIndex: String
+    ) =
         elasticsearchSharedService.getMappings(taskIndex)
 
     @ApiOperation("任务导出")
     @PostMapping("/export")
-    fun exportTask(@ApiParam("任务索引") @PathVariable taskIndex: String) =
+    fun exportTask(
+        @ApiParam("任务索引") @PathVariable taskIndex: String
+    ) =
         taskService.exportTask(taskIndex)
 }
