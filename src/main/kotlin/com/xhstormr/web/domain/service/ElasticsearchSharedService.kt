@@ -41,7 +41,7 @@ class ElasticsearchSharedService(
         query: String,
         indices: String,
         pageRequest: PageRequest
-    ): Map<String, Any?> {
+    ): SearchHits {
         val stringQueryBuilder = QueryBuilders
             .queryStringQuery(query)
             .defaultOperator(Operator.AND)
@@ -52,7 +52,7 @@ class ElasticsearchSharedService(
         val searchRequest = SearchRequest(indices)
             .source(searchSourceBuilder)
         val searchResponse = client.search(searchRequest, RequestOptions.DEFAULT)
-        return buildResponse(searchResponse.hits)
+        return searchResponse.hits
     }
 
     fun getIndex(indices: String): Array<String> {
@@ -143,9 +143,4 @@ class ElasticsearchSharedService(
                 }
             }
     }
-
-    private fun buildResponse(hits: SearchHits) = mapOf(
-        "totalHits" to hits.totalHits,
-        "pages" to hits.hits.map { it.sourceAsMap }
-    )
 }

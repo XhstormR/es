@@ -5,6 +5,7 @@ import com.xhstormr.web.domain.model.request.ElasticsearchQueryRequest
 import com.xhstormr.web.domain.model.request.PageRequest
 import com.xhstormr.web.domain.service.ElasticsearchSharedService
 import com.xhstormr.web.domain.service.TaskService
+import com.xhstormr.web.domain.util.toResponse
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
@@ -36,7 +37,7 @@ class TaskAnalysisController(
         @ApiParam("检索请求") @Valid @RequestBody request: ElasticsearchQueryRequest,
         @ApiParam("任务索引") @PathVariable taskIndex: String
     ) =
-        elasticsearchSharedService.stringQuery(request.query, taskIndex, pageRequest)
+        elasticsearchSharedService.stringQuery(request.query, taskIndex, pageRequest).toResponse()
 
     @ApiOperation("任务字段")
     @GetMapping("/field")
@@ -44,11 +45,4 @@ class TaskAnalysisController(
         @ApiParam("任务索引") @PathVariable taskIndex: String
     ) =
         elasticsearchSharedService.getMappings(taskIndex)
-
-    @ApiOperation("任务导出")
-    @PostMapping("/export")
-    fun exportTask(
-        @ApiParam("任务索引") @PathVariable taskIndex: String
-    ) =
-        taskService.exportTask(taskIndex)
 }

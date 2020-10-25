@@ -12,7 +12,7 @@ plugins {
     kotlin("plugin.jpa") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
     id("org.springframework.boot") version "2.3.4.RELEASE"
-    id("org.jlleitschuh.gradle.ktlint") version "9.4.0"
+    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
 }
 
 apply {

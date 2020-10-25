@@ -1,48 +1,73 @@
 package com.xhstormr.web.domain.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.xhstormr.web.app.config.SnapshotProperties
+import com.xhstormr.web.domain.model.SnapshotManifest
+import com.xhstormr.web.domain.model.request.PageRequest
+import com.xhstormr.web.domain.model.request.TaskExportRequest
+import com.xhstormr.web.domain.model.response.TaskImportResponse
 import com.xhstormr.web.domain.util.Archiver
+import com.xhstormr.web.domain.util.clazz
+import com.xhstormr.web.domain.util.require
 import org.springframework.stereotype.Service
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Properties
+import java.util.UUID
 
 @Service
 class TaskService(
     private val elasticsearchSharedService: ElasticsearchSharedService,
-    private val snapshotProperties: SnapshotProperties
+    private val snapshotProperties: SnapshotProperties,
+    private val objectMapper: ObjectMapper
 ) {
 
-    fun importTask(file: File) {
-        require(file.exists()) { "文件不存在" }
+    companion object {
+        const val MANIFEST_FILE = "MANIFEST.properties"
 
-        val dir = Archiver.unzip(file)
-
-        val properties = Properties()
-            .apply { dir.resolve(snapshotProperties.manifest).bufferedReader().use { load(it) } }
-
-        val taskIndex = properties["taskIndex"]!!.toString()
-
-        elasticsearchSharedService.importIndex(taskIndex, dir.resolve("$taskIndex.json"))
-        dir.deleteRecursively()
+        const val METADATA_FILE = "METADATA.json"
+        const val METADATA_INDICES = "metadata.task"
+        const val METADATA_QUERY = "task:%s"
     }
 
-    fun exportTask(taskIndex: String): File {
-        require(elasticsearchSharedService.existsIndex(taskIndex)) { "索引不存在" }
+    fun importTask(file: File): TaskImportResponse {
+        require(file)
 
-        val prefix = DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDateTime.now())
-        val dir = snapshotProperties.dir.resolve("$prefix-$taskIndex")
+        val archiveDir = Archiver.unarchive(file)
+
+        val (indices, videos, taskId) = objectMapper.readValue(
+            archiveDir.resolve(MANIFEST_FILE),
+            clazz<SnapshotManifest>()
+        )
+
+        indices.forEach { elasticsearchSharedService.importIndex(it, archiveDir.resolve("$it.json")) }
+
+        elasticsearchSharedService.importIndex(METADATA_INDICES, archiveDir.resolve(METADATA_FILE), true)
+
+        return TaskImportResponse(videos.map { archiveDir.resolve(it) }, taskId)
+    }
+
+    fun exportTask(request: TaskExportRequest): File {
+        val (indices, videos, taskId) = request
+        indices.forEach { require(elasticsearchSharedService.existsIndex(it)) { "索引不存在" } }
+        videos.forEach { require(it) }
+
+        val archiveName = "${DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDateTime.now())}-${UUID.randomUUID()}"
+        val archiveDir = snapshotProperties.dir.resolve(archiveName)
             .apply { mkdirs() }
 
-        elasticsearchSharedService.dumpIndex(taskIndex, dir.resolve("$taskIndex.json"))
+        val metadata = elasticsearchSharedService.stringQuery(
+            METADATA_QUERY.format(taskId),
+            METADATA_INDICES,
+            PageRequest()
+        ).map { it.sourceAsMap }[0]
+        val manifest = SnapshotManifest(indices, videos.map { it.name }, taskId)
 
-        Properties()
-            .apply { this["taskIndex"] = taskIndex }
-            .run { dir.resolve(snapshotProperties.manifest).bufferedWriter().use { store(it, null) } }
+        objectMapper.writeValue(archiveDir.resolve(METADATA_FILE), metadata)
+        objectMapper.writeValue(archiveDir.resolve(MANIFEST_FILE), manifest)
 
-        val file = Archiver.zip(dir)
-        dir.deleteRecursively()
-        return file
+        indices.forEach { elasticsearchSharedService.dumpIndex(it, archiveDir.resolve("$it.json")) }
+
+        return Archiver.archive(archiveDir, videos)
     }
 }

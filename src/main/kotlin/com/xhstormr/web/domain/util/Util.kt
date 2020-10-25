@@ -1,5 +1,6 @@
 package com.xhstormr.web.domain.util
 
+import org.elasticsearch.search.SearchHits
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
@@ -19,3 +20,11 @@ fun exec(command: String) =
         Runtime.getRuntime().exec(arrayOf("cmd", "/c", command)).waitFor()
     else
         Runtime.getRuntime().exec(arrayOf("sh", "-c", command)).waitFor()
+
+fun require(file: File) =
+    require(file.exists()) { "$file 文件不存在" }
+
+fun SearchHits.toResponse() = mapOf(
+    "totalHits" to totalHits,
+    "pages" to hits.map { it.sourceAsMap }
+)

@@ -4,8 +4,10 @@ import com.xhstormr.web.app.config.Const
 import com.xhstormr.web.domain.model.request.ElasticsearchQueryRequest
 import com.xhstormr.web.domain.model.request.FileImportRequest
 import com.xhstormr.web.domain.model.request.PageRequest
+import com.xhstormr.web.domain.model.request.TaskExportRequest
 import com.xhstormr.web.domain.service.ElasticsearchSharedService
 import com.xhstormr.web.domain.service.TaskService
+import com.xhstormr.web.domain.util.toResponse
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import io.swagger.annotations.ApiParam
@@ -35,7 +37,7 @@ class TaskController(
         @ApiParam("分页请求") @Valid pageRequest: PageRequest,
         @ApiParam("检索请求") @Valid @RequestBody request: ElasticsearchQueryRequest
     ) =
-        elasticsearchSharedService.stringQuery(request.query, Const.INDICES, pageRequest)
+        elasticsearchSharedService.stringQuery(request.query, Const.INDICES, pageRequest).toResponse()
 
     @ApiOperation("任务列表")
     @GetMapping
@@ -46,6 +48,13 @@ class TaskController(
     @GetMapping("/field")
     fun getTaskField() =
         elasticsearchSharedService.getMappings(Const.INDICES)
+
+    @ApiOperation("任务导出")
+    @PostMapping("/export")
+    fun exportTask(
+        @ApiParam("任务导出请求") @Valid @RequestBody request: TaskExportRequest,
+    ) =
+        taskService.exportTask(request)
 
     @ApiOperation("任务导入")
     @PostMapping("/import")

@@ -12,7 +12,6 @@ import java.io.File
 @ConfigurationProperties("snapshot")
 class SnapshotProperties(
     val dir: File,
-    val manifest: String,
 ) {
     init {
         dir.mkdirs()

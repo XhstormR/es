@@ -7,7 +7,8 @@ enum class DataTypeGroup(
     val types: EnumSet<DataType>
 ) : BaseEnum {
     LOG(
-        "日志", EnumSet.of(
+        "日志",
+        EnumSet.of(
             DataType.APPLICATION,
             DataType.SYSTEM,
             DataType.SECURITY,
@@ -16,12 +17,14 @@ enum class DataTypeGroup(
         )
     ),
     TRAFFIC(
-        "流量", EnumSet.of(
+        "流量",
+        EnumSet.of(
             DataType.PCAP
         )
     ),
     STATISTIC(
-        "运行态数据", EnumSet.of(
+        "运行态数据",
+        EnumSet.of(
             DataType.KEYBOARD,
             DataType.PROCESS,
             DataType.SERVICE,
