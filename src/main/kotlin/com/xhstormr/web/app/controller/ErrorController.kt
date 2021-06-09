@@ -21,8 +21,6 @@ class ErrorController(errorAttributes: ErrorAttributes) : AbstractErrorControlle
         private const val ERROR_PATH = "/error"
     }
 
-    override fun getErrorPath() = ERROR_PATH
-
     @RequestMapping(ERROR_PATH, produces = [MediaType.APPLICATION_JSON_VALUE])
     fun error(req: HttpServletRequest): Nothing =
         error(super.getErrorAttributes(req, ErrorAttributeOptions.defaults())["error"].toString())

@@ -1,6 +1,6 @@
 package com.xhstormr.web.app.controller
 
-import com.xhstormr.web.domain.model.request.FileImportRequest
+import com.xhstormr.web.domain.model.request.IndexImportRequest
 import com.xhstormr.web.domain.service.ElasticsearchSharedService
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -29,7 +29,7 @@ class ElasticsearchIndexController(
     @ApiOperation("索引导入")
     @PostMapping
     fun importIndex(
-        @ApiParam("索引导入请求") @Valid @RequestBody request: FileImportRequest,
+        @ApiParam("索引导入请求") @Valid @RequestBody request: IndexImportRequest,
         @ApiParam("索引") @PathVariable index: String
     ) =
         elasticsearchSharedService.importIndex(index, request.file)
@@ -37,7 +37,7 @@ class ElasticsearchIndexController(
     @ApiOperation("索引导入(追加)")
     @PutMapping
     fun putIndex(
-        @ApiParam("索引导入请求") @Valid @RequestBody request: FileImportRequest,
+        @ApiParam("索引导入请求") @Valid @RequestBody request: IndexImportRequest,
         @ApiParam("索引") @PathVariable index: String
     ) =
         elasticsearchSharedService.importIndex(index, request.file, true)

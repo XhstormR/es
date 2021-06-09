@@ -5,11 +5,14 @@ import com.xhstormr.web.app.config.SnapshotProperties
 import com.xhstormr.web.domain.model.SnapshotManifest
 import com.xhstormr.web.domain.model.request.PageRequest
 import com.xhstormr.web.domain.model.request.TaskExportRequest
+import com.xhstormr.web.domain.model.request.TaskImportRequest
 import com.xhstormr.web.domain.model.response.TaskImportResponse
 import com.xhstormr.web.domain.util.Archiver
 import com.xhstormr.web.domain.util.clazz
 import com.xhstormr.web.domain.util.require
 import org.springframework.stereotype.Service
+import org.springframework.web.client.RestTemplate
+import org.springframework.web.client.getForEntity
 import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -22,6 +25,8 @@ class TaskService(
     private val objectMapper: ObjectMapper
 ) {
 
+    private val webClient = RestTemplate()
+
     companion object {
         const val MANIFEST_FILE = "MANIFEST.properties"
 
@@ -30,7 +35,8 @@ class TaskService(
         const val METADATA_QUERY = "task:%s"
     }
 
-    fun importTask(file: File): TaskImportResponse {
+    fun importTask(request: TaskImportRequest): TaskImportResponse {
+        val (file, url) = request
         require(file)
 
         val archiveDir = Archiver.unarchive(file)
@@ -39,6 +45,8 @@ class TaskService(
             archiveDir.resolve(MANIFEST_FILE),
             clazz<SnapshotManifest>()
         )
+
+        val result = runCatching { webClient.getForEntity<Any>(url + taskId) }.getOrThrow()
 
         indices.forEach { elasticsearchSharedService.importIndex(it, archiveDir.resolve("$it.json")) }
 

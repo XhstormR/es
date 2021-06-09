@@ -21,7 +21,7 @@ spring:
   devtools:
     livereload:
       enabled: false
-  mvc:
+  web:
     locale: en_US
     locale-resolver: FIXED
   hateoas:
